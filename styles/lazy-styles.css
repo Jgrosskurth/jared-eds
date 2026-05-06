@@ -1,1 +1,90 @@
-/* add global styles that can be loaded post LCP here */
+/* =============================================================================
+   Jared EDS — Lazy-loaded Styles
+   Loaded after LCP — non-critical, enhancement CSS
+   ============================================================================= */
+
+/* Custom scrollbar — subtle lavender tint */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-light);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-accent);
+}
+
+/* Selection styling */
+::selection {
+  background: rgba(139, 107, 174, 0.2);
+  color: var(--color-primary);
+}
+
+/* Focus ring — accessibility */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* Print styles */
+@media print {
+  .announcement-bar,
+  .header,
+  .footer {
+    display: none;
+  }
+}
+
+/* Reveal animations for sections entering viewport */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(32px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.6s var(--transition-med) forwards;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.5s var(--transition-med) forwards;
+}
+
+/* Lazy image loading placeholder shimmer */
+@keyframes shimmer {
+  0%   { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
+}
+
+img[loading="lazy"]:not([src]) {
+  background: linear-gradient(
+    90deg,
+    var(--color-bg) 0%,
+    var(--color-border) 50%,
+    var(--color-bg) 100%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 1.5s infinite linear;
+}
+
+/* Smooth hover transitions for all interactive cards */
+.card-hover {
+  transition: transform var(--transition-med), box-shadow var(--transition-med);
+}
+
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(45, 27, 78, 0.12);
+}

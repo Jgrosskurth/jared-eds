@@ -1,0 +1,98 @@
+/* =============================================================================
+   Editorial Text Block — Jared EDS
+   Centered editorial copy on lavender background
+   ============================================================================= */
+
+.editorial-text-wrapper {
+  background: var(--color-bg);
+}
+
+.editorial-text {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: var(--spacing-2xl) var(--spacing-lg);
+  text-align: center;
+}
+
+.editorial-text__eyebrow {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin-bottom: var(--spacing-md);
+}
+
+.editorial-text__title {
+  font-family: var(--font-display);
+  font-size: clamp(26px, 3.5vw, 44px);
+  font-weight: 700;
+  color: var(--color-primary);
+  line-height: 1.2;
+  margin-bottom: var(--spacing-lg);
+  letter-spacing: 0.01em;
+}
+
+.editorial-text__body {
+  font-family: var(--font-body);
+  font-size: var(--font-size-md);
+  line-height: 1.7;
+  color: var(--color-mid);
+  margin-bottom: var(--spacing-xl);
+}
+
+.editorial-text__body p {
+  margin-bottom: var(--spacing-md);
+  color: var(--color-mid);
+}
+
+.editorial-text__body p:last-child {
+  margin-bottom: 0;
+}
+
+.editorial-text__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  text-decoration: none;
+  padding: 14px 36px;
+  border: 1px solid var(--color-primary);
+  border-radius: var(--border-radius-sm);
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.editorial-text__cta:hover {
+  background: var(--color-primary);
+  color: var(--color-white);
+}
+
+/* Reveal animation */
+.editorial-text {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.editorial-text.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .editorial-text {
+    padding: var(--spacing-xl) var(--spacing-md);
+  }
+
+  .editorial-text__body {
+    font-size: var(--font-size-base);
+  }
+}

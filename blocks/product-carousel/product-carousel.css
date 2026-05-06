@@ -1,134 +1,150 @@
 /* =============================================================================
    Product Carousel Block — Jared EDS
-   Horizontal scrollable product carousel with scroll-snap
+   Horizontal scroll-snap carousel. Hover lifts card translateY(-4px) + shadow.
+   Teal badge for NEW, dark red for SALE. Wishlist heart appears on hover.
    ============================================================================= */
 
 .product-carousel-wrapper {
   background: var(--color-white);
-  padding: var(--spacing-xl) 0;
+  padding: var(--space-xl) 0;
 }
 
 .product-carousel {
   max-width: var(--max-width);
   margin: 0 auto;
-  padding: 0 var(--spacing-lg);
+  padding: 0 var(--space-lg);
 }
 
-/* Section header */
+/* ─── Section header ─────────────────────────────────────────────────────────── */
 .product-carousel__header {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: var(--space-lg);
+  gap: var(--space-md);
 }
 
 .product-carousel__title {
   font-family: var(--font-display);
-  font-size: clamp(22px, 2.5vw, 34px);
-  font-weight: 700;
+  font-size: clamp(24px, 2.8vw, 36px);
+  font-weight: 400;
   color: var(--color-primary);
   margin: 0;
   line-height: 1.1;
+  letter-spacing: 0.01em;
 }
 
 .product-carousel__view-all {
   font-family: var(--font-body);
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-xs);
   font-weight: 600;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--color-primary);
   text-decoration: none;
   border-bottom: 1px solid var(--color-primary);
-  transition: color var(--transition-fast), border-color var(--transition-fast);
+  padding-bottom: 1px;
   white-space: nowrap;
+  transition: color var(--transition-fast), border-color var(--transition-fast);
 }
 
 .product-carousel__view-all:hover {
   color: var(--color-accent);
   border-bottom-color: var(--color-accent);
+  text-decoration: none;
 }
 
-/* Carousel container */
+/* ─── Container + track ──────────────────────────────────────────────────────── */
 .product-carousel__container {
   position: relative;
 }
 
 .product-carousel__track {
   display: flex;
-  gap: var(--spacing-md);
+  gap: var(--space-md);
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
-  scrollbar-width: none; /* Firefox */
-  padding-bottom: var(--spacing-sm);
+  scrollbar-width: none;
+  padding-bottom: var(--space-sm);
 }
 
 .product-carousel__track::-webkit-scrollbar {
   display: none;
 }
 
-/* Product card */
+/* ─── Product card ───────────────────────────────────────────────────────────── */
 .product-card {
   flex: 0 0 calc(25% - 12px);
   scroll-snap-align: start;
   background: var(--color-white);
-  border-radius: var(--border-radius-sm);
   overflow: hidden;
   text-decoration: none;
   display: flex;
   flex-direction: column;
-  transition: transform var(--transition-med), box-shadow var(--transition-med);
   border: 1px solid var(--color-border);
+  transition:
+    transform   var(--transition-med),
+    box-shadow  var(--transition-med),
+    border-color var(--transition-fast);
 }
 
 .product-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 36px rgba(45, 27, 78, 0.1);
+  box-shadow: 0 10px 32px rgba(27, 58, 75, 0.10);
+  border-color: var(--color-accent-light);
+  text-decoration: none;
 }
 
-/* Product image */
+/* ─── Product image ──────────────────────────────────────────────────────────── */
 .product-card__image-wrap {
   position: relative;
   aspect-ratio: 1 / 1;
   overflow: hidden;
   background: var(--color-bg);
+  flex-shrink: 0;
 }
 
+.product-card__image-wrap picture,
 .product-card__image-wrap img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: transform var(--transition-slow);
+  transition: transform 0.55s ease;
 }
 
+.product-card:hover .product-card__image-wrap picture,
 .product-card:hover .product-card__image-wrap img {
   transform: scale(1.05);
 }
 
-/* Wishlist button */
+/* ─── Wishlist button ────────────────────────────────────────────────────────── */
 .product-card__wishlist {
   position: absolute;
-  top: var(--spacing-sm);
-  right: var(--spacing-sm);
+  top: var(--space-sm);
+  right: var(--space-sm);
   width: 34px;
   height: 34px;
   background: var(--color-white);
   border: none;
-  border-radius: 50%;
+  border-radius: var(--border-radius-circle);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   opacity: 0;
-  transform: translateY(-4px);
-  transition: opacity var(--transition-fast), transform var(--transition-fast), background var(--transition-fast);
-  box-shadow: 0 2px 8px rgba(45, 27, 78, 0.1);
+  transform: translateY(-3px);
+  transition:
+    opacity    var(--transition-fast),
+    transform  var(--transition-fast),
+    background var(--transition-fast);
+  box-shadow: 0 2px 6px rgba(27, 58, 75, 0.10);
   z-index: 2;
 }
 
+/* Show on card hover OR when active (saved) */
 .product-card:hover .product-card__wishlist,
 .product-card__wishlist.active {
   opacity: 1;
@@ -145,6 +161,7 @@
   stroke: var(--color-primary);
   fill: none;
   stroke-width: 1.5;
+  transition: fill var(--transition-fast), stroke var(--transition-fast);
 }
 
 .product-card__wishlist.active svg {
@@ -152,47 +169,56 @@
   stroke: var(--color-sale);
 }
 
-/* New/sale badge */
+/* ─── Badges ─────────────────────────────────────────────────────────────────── */
 .product-card__badge {
   position: absolute;
-  top: var(--spacing-sm);
-  left: var(--spacing-sm);
+  top: var(--space-sm);
+  left: var(--space-sm);
   font-family: var(--font-body);
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.10em;
   text-transform: uppercase;
   padding: 4px 8px;
-  border-radius: 2px;
   z-index: 2;
+  line-height: 1;
 }
 
+/* Teal badge for NEW — Jared brand */
 .product-card__badge--new {
   background: var(--color-primary);
   color: var(--color-white);
 }
 
+/* Red badge for SALE */
 .product-card__badge--sale {
   background: var(--color-sale);
   color: var(--color-white);
 }
 
-/* Card info */
+/* Exclusive badge — gold */
+.product-card__badge--exclusive {
+  background: var(--color-accent);
+  color: var(--color-white);
+}
+
+/* ─── Card info ──────────────────────────────────────────────────────────────── */
 .product-card__info {
-  padding: var(--spacing-md);
+  padding: var(--space-md);
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-xs);
+  gap: var(--space-xs);
 }
 
 .product-card__name {
   font-family: var(--font-body);
   font-size: var(--font-size-sm);
-  font-weight: 600;
+  font-weight: 500;
   color: var(--color-dark);
-  line-height: 1.3;
+  line-height: 1.35;
   margin: 0;
+  /* Clamp to 2 lines */
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -202,9 +228,9 @@
 .product-card__price-row {
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
+  gap: var(--space-sm);
   margin-top: auto;
-  padding-top: var(--spacing-xs);
+  padding-top: var(--space-xs);
 }
 
 .product-card__price {
@@ -214,35 +240,58 @@
   color: var(--color-primary);
 }
 
+.product-card__price-sale {
+  color: var(--color-sale);
+}
+
 .product-card__price-original {
+  font-family: var(--font-body);
   font-size: var(--font-size-xs);
   color: var(--color-mid);
   text-decoration: line-through;
 }
 
-.product-card__price-sale {
-  color: var(--color-sale);
+/* Metal color dots (optional) */
+.product-card__metals {
+  display: flex;
+  gap: 5px;
+  margin-top: var(--space-xs);
 }
 
-/* Arrow buttons */
+.product-card__metal-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+}
+
+.product-card__metal-dot--yellow-gold { background: #d4a017; }
+.product-card__metal-dot--white-gold  { background: #e8e8e8; }
+.product-card__metal-dot--rose-gold   { background: #c97c5d; }
+.product-card__metal-dot--platinum    { background: #c8c8d0; }
+
+/* ─── Arrow buttons ──────────────────────────────────────────────────────────── */
 .product-carousel__arrows {
   display: flex;
-  gap: var(--spacing-sm);
-  margin-top: var(--spacing-md);
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
   justify-content: flex-end;
 }
 
 .product-carousel__arrow {
   width: 44px;
   height: 44px;
-  border-radius: 50%;
+  border-radius: var(--border-radius-circle);
   border: 1px solid var(--color-border);
   background: var(--color-white);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all var(--transition-fast);
+  transition:
+    background    var(--transition-fast),
+    border-color  var(--transition-fast),
+    color         var(--transition-fast);
   color: var(--color-primary);
 }
 
@@ -254,7 +303,7 @@
 
 .product-carousel__arrow:disabled {
   opacity: 0.3;
-  cursor: not-allowed;
+  cursor: default;
   pointer-events: none;
 }
 
@@ -264,42 +313,56 @@
   stroke: currentColor;
   fill: none;
   stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
-/* Tablet — 3 per view */
+/* ─── Tablet — 3-up ──────────────────────────────────────────────────────────── */
 @media (max-width: 1100px) {
   .product-card {
-    flex: 0 0 calc(33.33% - 11px);
+    flex: 0 0 calc(33.333% - 11px);
   }
 }
 
-/* Mobile — 2 per view */
+/* ─── Mobile — 2-up ──────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
   .product-carousel {
-    padding: 0 var(--spacing-md);
+    padding: 0 var(--space-md);
   }
 
   .product-carousel__track {
-    gap: var(--spacing-sm);
+    gap: var(--space-sm);
   }
 
   .product-card {
     flex: 0 0 calc(50% - 6px);
   }
 
-  .product-carousel__arrows {
-    display: none;
-  }
-
+  /* Always show wishlist on mobile (no hover) */
   .product-card__wishlist {
     opacity: 1;
     transform: translateY(0);
   }
+
+  .product-carousel__arrows {
+    display: none;
+  }
 }
 
-/* Very small — 1.5 per view */
+/* ─── Very small — 1.5 per view ─────────────────────────────────────────────── */
 @media (max-width: 400px) {
   .product-card {
-    flex: 0 0 calc(75% - 6px);
+    flex: 0 0 78%;
+  }
+}
+
+/* ─── Reduced motion ─────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .product-card:hover {
+    transform: none;
+  }
+
+  .product-card__image-wrap img {
+    transition: none;
   }
 }

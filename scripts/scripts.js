@@ -1,189 +1,133 @@
+/*
+ * Jared EDS — Main Scripts Entry Point
+ */
+
 import {
-  buildBlock,
-  loadHeader,
-  loadFooter,
-  decorateIcons,
-  decorateSections,
-  decorateBlocks,
-  decorateTemplateAndTheme,
-  waitForFirstImage,
-  loadSection,
-  loadSections,
   loadCSS,
+  decorateBlocks,
+  decorateSections,
+  loadBlocks,
+  loadBlock,
+  getMetadata,
 } from './aem.js';
 
-/**
- * Builds hero block and prepends to main in a new section.
- * @param {Element} main The container element
- */
-function buildHeroBlock(main) {
-  const h1 = main.querySelector('h1');
-  const picture = main.querySelector('picture');
-  // eslint-disable-next-line no-bitwise
-  if (h1 && picture && (h1.compareDocumentPosition(picture) & Node.DOCUMENT_POSITION_PRECEDING)) {
-    // Check if h1 or picture is already inside a hero block
-    if (h1.closest('.hero') || picture.closest('.hero')) {
-      return; // Don't create a duplicate hero block
-    }
-    const section = document.createElement('div');
-    section.append(buildBlock('hero', { elems: [picture, h1] }));
-    main.prepend(section);
-  }
-}
+const LCP_BLOCKS = ['hero', 'announcement-bar'];
 
 /**
- * load fonts.css and set a session storage flag
+ * Decorates pictures with a wrapper and lazy-loading.
+ * @param {HTMLElement} main
  */
-async function loadFonts() {
-  await loadCSS(`${window.hlx.codeBasePath}/styles/fonts.css`);
-  try {
-    if (!window.location.hostname.includes('localhost')) sessionStorage.setItem('fonts-loaded', 'true');
-  } catch (e) {
-    // do nothing
-  }
-}
-
-/**
- * Builds all synthetic blocks in a container element.
- * @param {Element} main The container element
- */
-function buildAutoBlocks(main) {
-  try {
-    // auto load `*/fragments/*` references
-    const fragments = [...main.querySelectorAll('a[href*="/fragments/"]')].filter((f) => !f.closest('.fragment'));
-    if (fragments.length > 0) {
-      // eslint-disable-next-line import/no-cycle
-      import('../blocks/fragment/fragment.js').then(({ loadFragment }) => {
-        fragments.forEach(async (fragment) => {
-          try {
-            const { pathname } = new URL(fragment.href);
-            const frag = await loadFragment(pathname);
-            fragment.parentElement.replaceWith(...frag.children);
-          } catch (error) {
-            // eslint-disable-next-line no-console
-            console.error('Fragment loading failed', error);
-          }
-        });
-      });
-    }
-
-    buildHeroBlock(main);
-  } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error('Auto Blocking failed', error);
-  }
-}
-
-/**
- * Decorates formatted links to style them as buttons.
- * @param {HTMLElement} main The main container element
- */
-function decorateButtons(main) {
-  main.querySelectorAll('p a[href]').forEach((a) => {
-    a.title = a.title || a.textContent;
-    const p = a.closest('p');
-    const text = a.textContent.trim();
-
-    // quick structural checks
-    if (a.querySelector('img') || p.textContent.trim() !== text) return;
-
-    // skip URL display links
-    try {
-      if (new URL(a.href).href === new URL(text, window.location).href) return;
-    } catch { /* continue */ }
-
-    // require authored formatting for buttonization
-    const strong = a.closest('strong');
-    const em = a.closest('em');
-    if (!strong && !em) return;
-
-    p.className = 'button-wrapper';
-    a.className = 'button';
-    if (strong && em) { // high-impact call-to-action
-      a.classList.add('accent');
-      const outer = strong.contains(em) ? strong : em;
-      outer.replaceWith(a);
-    } else if (strong) {
-      a.classList.add('primary');
-      strong.replaceWith(a);
-    } else {
-      a.classList.add('secondary');
-      em.replaceWith(a);
+function decoratePictures(main) {
+  main.querySelectorAll('img').forEach((img) => {
+    if (!img.closest('.hero')) {
+      img.setAttribute('loading', 'lazy');
     }
   });
 }
 
 /**
- * Decorates the main element.
- * @param {Element} main The main element
+ * Decorates links — adds external target for offsite links.
+ * @param {HTMLElement} main
  */
-// eslint-disable-next-line import/prefer-default-export
-export function decorateMain(main) {
-  decorateIcons(main);
-  buildAutoBlocks(main);
+function decorateLinks(main) {
+  main.querySelectorAll('a[href]').forEach((a) => {
+    try {
+      const url = new URL(a.href);
+      if (url.hostname && url.hostname !== window.location.hostname) {
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+      }
+    } catch {
+      // relative URL, skip
+    }
+  });
+}
+
+/**
+ * Wraps buttons and links that are standalone in p tags with button classes.
+ * @param {HTMLElement} main
+ */
+function decorateButtons(main) {
+  main.querySelectorAll('p > a, p > strong > a, p > em > a').forEach((a) => {
+    const parent = a.parentElement;
+    const isAlone = parent.textContent.trim() === a.textContent.trim();
+    if (!isAlone) return;
+
+    a.classList.add('btn');
+    const grandparent = parent.parentElement;
+
+    if (parent.tagName === 'EM') {
+      a.classList.add('btn-outline');
+      parent.replaceWith(a);
+    } else if (parent.tagName === 'STRONG') {
+      a.classList.add('btn-primary');
+      parent.replaceWith(a);
+    } else {
+      a.classList.add('btn-outline');
+    }
+
+    // Wrap in button-container div
+    const wrapper = document.createElement('p');
+    wrapper.className = 'button-container';
+    a.replaceWith(wrapper);
+    wrapper.append(a);
+  });
+}
+
+/**
+ * Loads the announcement bar and header before anything else.
+ * @param {HTMLElement} main
+ */
+async function loadEager(main) {
+  // Load fonts early
+  loadCSS('/styles/fonts.css');
+
   decorateSections(main);
   decorateBlocks(main);
+  decoratePictures(main);
+  decorateLinks(main);
   decorateButtons(main);
+
+  // Load LCP blocks immediately
+  const lcpCandidates = main.querySelectorAll(
+    LCP_BLOCKS.map((b) => `div.${b}`).join(', ')
+  );
+
+  await Promise.all([...lcpCandidates].map(loadBlock));
 }
 
 /**
- * Loads everything needed to get to LCP.
- * @param {Element} doc The container element
+ * Loads remaining blocks after LCP.
+ * @param {HTMLElement} main
  */
-async function loadEager(doc) {
-  document.documentElement.lang = 'en';
-  decorateTemplateAndTheme();
-  const main = doc.querySelector('main');
-  if (main) {
-    decorateMain(main);
-    document.body.classList.add('appear');
-    await loadSection(main.querySelector('.section'), waitForFirstImage);
-  }
-
-  try {
-    /* if desktop (proxy for fast connection) or fonts already loaded, load fonts.css */
-    if (window.innerWidth >= 900 || sessionStorage.getItem('fonts-loaded')) {
-      loadFonts();
-    }
-  } catch (e) {
-    // do nothing
-  }
+async function loadLazy(main) {
+  loadCSS('/styles/lazy-styles.css');
+  await loadBlocks(main);
 }
 
 /**
- * Loads everything that doesn't need to be delayed.
- * @param {Element} doc The container element
- */
-async function loadLazy(doc) {
-  loadHeader(doc.querySelector('header'));
-
-  const main = doc.querySelector('main');
-  await loadSections(main);
-
-  const { hash } = window.location;
-  const element = hash ? doc.getElementById(hash.substring(1)) : false;
-  if (hash && element) element.scrollIntoView();
-
-  loadFooter(doc.querySelector('footer'));
-
-  loadCSS(`${window.hlx.codeBasePath}/styles/lazy-styles.css`);
-  loadFonts();
-}
-
-/**
- * Loads everything that happens a lot later,
- * without impacting the user experience.
+ * Loads after all blocks are loaded — analytics, 3rd party.
  */
 function loadDelayed() {
-  // eslint-disable-next-line import/no-cycle
-  window.setTimeout(() => import('./delayed.js'), 3000);
-  // load anything that can be postponed to the latest here
+  // Delayed script loading — analytics, chat, etc.
+  import('./delayed.js').catch(() => {});
 }
 
+/**
+ * Initialises the page.
+ */
 async function loadPage() {
-  await loadEager(document);
-  await loadLazy(document);
-  loadDelayed();
+  const main = document.querySelector('main');
+  if (!main) return;
+
+  await loadEager(main);
+
+  // Yield to allow LCP paint
+  await new Promise((r) => { window.requestAnimationFrame(r); });
+
+  await loadLazy(main);
+
+  window.addEventListener('load', loadDelayed);
 }
 
 loadPage();

@@ -1,24 +1,24 @@
 /*
  * Editorial Feature Block — Jared EDS
- * Jared's signature aspirational section.
- * Large centered editorial copy on lavender background.
+ * Large centered serif editorial copy on warm section background.
+ * Scroll-triggered scale+fade reveal (0.98 → 1.0).
  *
  * Block table structure:
- *   Row 0: [image(s)]  — one or two images
- *   Row 1: [category label]
- *   Row 2: [large editorial body paragraph]
+ *   Row 0: [image(s)]       — one or two images
+ *   Row 1: [category label] — short text
+ *   Row 2: [editorial body] — large paragraph (required)
  *   Row 3: [CTA link]
  */
 
 const DEFAULTS = {
-  label: 'Bridal + Engagement',
-  headline: '',
+  label: 'Bridal & Engagement',
   body: 'Every love story deserves a ring that feels personal. Our modern engagement styles balance intentional design with effortless individuality.',
   cta: { text: 'Shop Engagement Rings', href: '/engagement-rings' },
 };
 
 /**
- * Observes an element and adds .visible when it enters the viewport.
+ * Attaches an IntersectionObserver that adds .visible once the element
+ * enters the viewport. Triggers the CSS scale+fade transition.
  * @param {HTMLElement} el
  */
 function observeReveal(el) {
@@ -31,7 +31,7 @@ function observeReveal(el) {
         }
       });
     },
-    { threshold: 0.15 }
+    { threshold: 0.12 }
   );
   observer.observe(el);
 }
@@ -39,39 +39,42 @@ function observeReveal(el) {
 /**
  * Parses block rows into structured content.
  * @param {HTMLElement} block
- * @returns {Object}
+ * @returns {{ images: Element[], label: string, headline: string, body: string, cta: Object|null }}
  */
 function parseBlock(block) {
   const rows = [...block.querySelectorAll(':scope > div')];
   const data = {
-    images: [],
-    label: '',
+    images:   [],
+    label:    '',
     headline: '',
-    body: '',
-    cta: null,
+    body:     '',
+    cta:      null,
   };
 
   rows.forEach((row) => {
-    const cells = [...row.querySelectorAll(':scope > div')];
-
-    // Check for images
-    const imgs = row.querySelectorAll('img, picture');
+    // Image row
+    const imgs = [...row.querySelectorAll('picture, img:not(picture img)')];
     if (imgs.length) {
-      imgs.forEach((img) => data.images.push(img));
+      imgs.forEach((img) => {
+        const el = img.tagName === 'PICTURE' ? img : (img.closest('picture') || img);
+        const imgEl = el.tagName === 'PICTURE' ? el.querySelector('img') : el;
+        if (imgEl) {
+          if (!imgEl.getAttribute('loading')) imgEl.setAttribute('loading', 'lazy');
+          if (!imgEl.alt) imgEl.alt = 'Jared engagement jewelry editorial';
+        }
+        data.images.push(el);
+      });
       return;
     }
 
-    // Text cells
+    // CTA row
+    const cells = [...row.querySelectorAll(':scope > div')];
     cells.forEach((cell) => {
       const links = cell.querySelectorAll('a');
-      const text = cell.textContent.trim();
+      const text  = cell.textContent.trim();
 
       if (links.length && !data.cta) {
-        // This row is a CTA
-        data.cta = {
-          text: links[0].textContent.trim(),
-          href: links[0].href,
-        };
+        data.cta = { text: links[0].textContent.trim(), href: links[0].href };
         return;
       }
 
@@ -87,10 +90,10 @@ function parseBlock(block) {
     });
   });
 
-  // Apply defaults for any missing fields
+  // Defaults
   if (!data.label) data.label = DEFAULTS.label;
-  if (!data.body) data.body = DEFAULTS.body;
-  if (!data.cta) data.cta = DEFAULTS.cta;
+  if (!data.body)  data.body  = DEFAULTS.body;
+  if (!data.cta)   data.cta   = DEFAULTS.cta;
 
   return data;
 }
@@ -102,38 +105,20 @@ export default function decorate(block) {
   const data = parseBlock(block);
   block.innerHTML = '';
 
-  // Image zone
-  if (data.images.length) {
-    if (data.images.length >= 2) {
-      const grid = document.createElement('div');
-      grid.className = 'editorial-feature__image-grid';
-      // Ensure images are in picture elements
-      data.images.slice(0, 2).forEach((img) => {
-        const el = img.tagName === 'PICTURE' ? img : img.closest('picture') || img;
-        const imgEl = el.tagName === 'PICTURE' ? el.querySelector('img') : el;
-        if (imgEl) {
-          imgEl.setAttribute('loading', 'lazy');
-          imgEl.alt = imgEl.alt || 'Jared engagement jewelry';
-        }
-        grid.appendChild(el);
-      });
-      block.appendChild(grid);
-    } else {
-      const imageZone = document.createElement('div');
-      imageZone.className = 'editorial-feature__image-zone';
-      const img = data.images[0];
-      const el = img.tagName === 'PICTURE' ? img : img.closest('picture') || img;
-      const imgEl = el.tagName === 'PICTURE' ? el.querySelector('img') : el;
-      if (imgEl) {
-        imgEl.setAttribute('loading', 'lazy');
-        imgEl.alt = imgEl.alt || 'Jared engagement jewelry editorial';
-      }
-      imageZone.appendChild(el);
-      block.appendChild(imageZone);
-    }
+  /* ─ Images ─ */
+  if (data.images.length >= 2) {
+    const grid = document.createElement('div');
+    grid.className = 'editorial-feature__image-grid';
+    data.images.slice(0, 2).forEach((el) => grid.appendChild(el));
+    block.appendChild(grid);
+  } else if (data.images.length === 1) {
+    const zone = document.createElement('div');
+    zone.className = 'editorial-feature__image-zone';
+    zone.appendChild(data.images[0]);
+    block.appendChild(zone);
   }
 
-  // Content zone
+  /* ─ Content ─ */
   const contentZone = document.createElement('div');
   contentZone.className = 'editorial-feature__content';
 
@@ -146,7 +131,7 @@ export default function decorate(block) {
   label.textContent = data.label;
   inner.appendChild(label);
 
-  // Divider
+  // Decorative divider
   const divider = document.createElement('div');
   divider.className = 'editorial-feature__divider';
   divider.setAttribute('aria-hidden', 'true');
@@ -163,7 +148,6 @@ export default function decorate(block) {
   // Body — the key editorial paragraph
   const body = document.createElement('div');
   body.className = 'editorial-feature__body';
-  // If body is plain text (no HTML tags), wrap in p
   if (!data.body.includes('<')) {
     const p = document.createElement('p');
     p.textContent = data.body;
@@ -185,6 +169,6 @@ export default function decorate(block) {
   contentZone.appendChild(inner);
   block.appendChild(contentZone);
 
-  // Animate on scroll
+  // Trigger scroll reveal
   observeReveal(inner);
 }

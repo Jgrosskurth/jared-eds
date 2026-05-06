@@ -1,14 +1,15 @@
 /*
  * Announcement Bar Block — Jared EDS
- * Rotating promo messages with left/right utility nav links.
+ * Dark teal strip with rotating promo carousel, left/right utility nav links.
+ * JS logic preserved from current implementation; variables + structure aligned.
  */
 
 const INTERVAL_MS = 5000;
 
 const DEFAULT_MESSAGES = [
+  'HOLIDAY SALE! 30% OFF SELECT STYLES <span class="dropdown-trigger">Shop Now</span>',
   'Free Shipping on Orders $50+ | Shop Now',
   'Complimentary Gift Wrapping on All Orders',
-  'Up to 40% Off Select Engagement Rings — Shop the Sale',
   'Buy Now, Pay Later with Affirm',
 ];
 
@@ -24,6 +25,7 @@ const RIGHT_LINKS = [
 
 /**
  * Parses messages from the block's table rows.
+ * Each row's first cell innerHTML becomes a slide.
  * @param {HTMLElement} block
  * @returns {string[]}
  */
@@ -36,16 +38,12 @@ function parseMessages(block) {
 }
 
 /**
- * Creates the announcement bar HTML.
+ * Builds the full bar DOM structure.
  * @param {string[]} messages
- * @returns {HTMLElement}
+ * @returns {{ left: HTMLElement, center: HTMLElement, right: HTMLElement, track: HTMLElement }}
  */
 function buildBar(messages) {
-  const bar = document.createElement('div');
-  bar.className = 'announcement-bar__inner';
-  bar.style.display = 'contents';
-
-  // Left — utility links
+  /* ─ Left ─ */
   const left = document.createElement('div');
   left.className = 'announcement-bar__left';
   LEFT_LINKS.forEach(({ label, href }) => {
@@ -55,7 +53,7 @@ function buildBar(messages) {
     left.appendChild(a);
   });
 
-  // Center — carousel
+  /* ─ Center carousel ─ */
   const center = document.createElement('div');
   center.className = 'announcement-bar__center';
 
@@ -66,6 +64,8 @@ function buildBar(messages) {
 
   const track = document.createElement('div');
   track.className = 'announcement-bar__track';
+  track.setAttribute('aria-live', 'polite');
+  track.setAttribute('aria-atomic', 'true');
 
   messages.forEach((msg, i) => {
     const slide = document.createElement('div');
@@ -81,7 +81,7 @@ function buildBar(messages) {
 
   center.append(prevBtn, track, nextBtn);
 
-  // Right — utility links
+  /* ─ Right ─ */
   const right = document.createElement('div');
   right.className = 'announcement-bar__right';
   RIGHT_LINKS.forEach(({ label, href }) => {
@@ -95,9 +95,9 @@ function buildBar(messages) {
 }
 
 /**
- * Controls the carousel rotation.
+ * Controls carousel rotation.
  * @param {HTMLElement} track
- * @returns {{ prev: Function, next: Function, pause: Function, resume: Function }}
+ * @returns {{ prev: Function, next: Function, pause: Function, resume: Function, start: Function }}
  */
 function createCarousel(track) {
   const slides = [...track.querySelectorAll('.announcement-bar__slide')];
@@ -105,26 +105,30 @@ function createCarousel(track) {
   let timer = null;
 
   function goTo(idx) {
-    slides[current].classList.remove('active');
-    slides[current].classList.add('exiting');
     const prev = current;
+    slides[prev].classList.remove('active');
+    slides[prev].classList.add('exiting');
     current = (idx + slides.length) % slides.length;
     slides[current].classList.add('active');
+    // Clean up exiting class after animation
     setTimeout(() => slides[prev].classList.remove('exiting'), 400);
   }
 
   function start() {
-    timer = setInterval(() => goTo(current + 1), INTERVAL_MS);
+    if (slides.length > 1) {
+      timer = setInterval(() => goTo(current + 1), INTERVAL_MS);
+    }
   }
 
   function stop() {
     clearInterval(timer);
+    timer = null;
   }
 
   return {
-    prev: () => { stop(); goTo(current - 1); start(); },
-    next: () => { stop(); goTo(current + 1); start(); },
-    pause: stop,
+    prev:   () => { stop(); goTo(current - 1); start(); },
+    next:   () => { stop(); goTo(current + 1); start(); },
+    pause:  stop,
     resume: start,
     start,
   };
@@ -147,7 +151,7 @@ export default function decorate(block) {
   block.querySelector('.announcement-bar__prev').addEventListener('click', carousel.prev);
   block.querySelector('.announcement-bar__next').addEventListener('click', carousel.next);
 
-  // Pause on hover
+  // Pause on hover / resume on leave
   block.addEventListener('mouseenter', carousel.pause);
   block.addEventListener('mouseleave', carousel.resume);
 

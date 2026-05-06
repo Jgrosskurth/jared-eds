@@ -1,12 +1,11 @@
 /*
  * Bridal Collections Block — Jared EDS
- * 4-up curated collection grid with hover overlays and stagger reveal.
+ * 4-up collection card grid with staggered IntersectionObserver reveal.
+ * Gold border + overlay CTA on hover — Jared design language.
  *
  * Block table structure (each row = one collection card):
  *   Row 0: [heading | view-all link]
- *   Row 1: [image | collection name | description | link]
- *   Row 2: [image | collection name | description | link]
- *   ...
+ *   Row N: [image | collection name | description | link]
  */
 
 const DEFAULT_COLLECTIONS = [
@@ -14,25 +13,25 @@ const DEFAULT_COLLECTIONS = [
     name: 'Solitaire Rings',
     desc: 'Classic brilliance. A single diamond, perfectly set.',
     href: '/collections/solitaire',
-    image: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=600&q=80',
+    image: null,
   },
   {
     name: 'Halo Collection',
     desc: 'Brilliant center stones encircled by a luminous halo.',
     href: '/collections/halo',
-    image: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=600&q=80',
+    image: null,
   },
   {
     name: 'Three-Stone Rings',
     desc: 'Past, present, and future — told in three stones.',
     href: '/collections/three-stone',
-    image: 'https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=600&q=80',
+    image: null,
   },
   {
     name: 'Vintage Inspired',
     desc: 'Intricate milgrain details and antique-inspired settings.',
     href: '/collections/vintage',
-    image: 'https://images.unsplash.com/photo-1589128777073-263566ae5e4d?w=600&q=80',
+    image: null,
   },
 ];
 
@@ -47,7 +46,7 @@ function createCard(collection) {
   card.className = 'collection-card';
   card.setAttribute('aria-label', `Shop ${collection.name}`);
 
-  // Image wrap
+  /* ─ Image wrap ─ */
   const imageWrap = document.createElement('div');
   imageWrap.className = 'collection-card__image-wrap';
 
@@ -61,12 +60,9 @@ function createCard(collection) {
     img.width = 600;
     img.height = 800;
     imageWrap.appendChild(img);
-  } else {
-    // Lavender placeholder
-    imageWrap.style.background = 'var(--color-bg)';
   }
 
-  // Hover overlay
+  /* ─ Hover overlay ─ */
   const overlay = document.createElement('div');
   overlay.className = 'collection-card__overlay';
   overlay.setAttribute('aria-hidden', 'true');
@@ -78,7 +74,7 @@ function createCard(collection) {
 
   card.appendChild(imageWrap);
 
-  // Body
+  /* ─ Card body ─ */
   const body = document.createElement('div');
   body.className = 'collection-card__body';
 
@@ -97,7 +93,7 @@ function createCard(collection) {
 }
 
 /**
- * Parses the block table into section title and collection data.
+ * Parses block table rows into section header + collection data.
  * @param {HTMLElement} block
  * @returns {{ title: string, viewAllHref: string, collections: Object[] }}
  */
@@ -110,8 +106,8 @@ function parseBlock(block) {
   rows.forEach((row, idx) => {
     const cells = [...row.querySelectorAll(':scope > div')];
 
-    if (idx === 0 && !row.querySelector('img')) {
-      // Header row
+    // Header row — no image
+    if (idx === 0 && !row.querySelector('img, picture')) {
       title = cells[0]?.textContent.trim() || title;
       const link = cells[1]?.querySelector('a');
       if (link) viewAllHref = link.href;
@@ -120,34 +116,38 @@ function parseBlock(block) {
 
     // Card row
     const imagePicture = row.querySelector('picture') || null;
-    const imageImg = !imagePicture ? row.querySelector('img') : null;
-    const textCells = cells.filter((c) => !c.querySelector('img') && !c.querySelector('picture'));
-    const link = row.querySelector('a');
-
-    const collection = {
-      imagePicture,
-      image: imageImg?.src || null,
-      name: textCells[0]?.textContent.trim() || `Collection ${idx}`,
-      desc: textCells[1]?.textContent.trim() || '',
-      href: link?.href || '#',
-    };
+    const imageImg     = !imagePicture ? row.querySelector('img') : null;
+    const textCells    = cells.filter((c) => !c.querySelector('img, picture'));
+    const link         = row.querySelector('a');
 
     if (imagePicture) {
       const img = imagePicture.querySelector('img');
       if (img) {
-        img.loading = 'lazy';
-        img.alt = img.alt || collection.name;
+        if (!img.getAttribute('loading')) img.setAttribute('loading', 'lazy');
+        if (!img.alt) img.alt = textCells[0]?.textContent.trim() || 'Jared collection';
       }
     }
 
-    collections.push(collection);
+    collections.push({
+      imagePicture,
+      image: imageImg?.src || null,
+      name:  textCells[0]?.textContent.trim() || `Collection ${idx}`,
+      desc:  textCells[1]?.textContent.trim() || '',
+      href:  link?.href || '#',
+    });
   });
 
-  return { title, viewAllHref, collections: collections.length ? collections : DEFAULT_COLLECTIONS };
+  return {
+    title,
+    viewAllHref,
+    collections: collections.length ? collections : DEFAULT_COLLECTIONS,
+  };
 }
 
 /**
- * Observe cards and stagger their reveal.
+ * Stagger-reveals cards via IntersectionObserver.
+ * Each card gets .visible after the container crosses the threshold.
+ * CSS transition-delay handles the 80ms stagger per nth-child.
  * @param {HTMLElement[]} cards
  */
 function observeCards(cards) {
@@ -160,7 +160,7 @@ function observeCards(cards) {
         }
       });
     },
-    { threshold: 0.1 }
+    { threshold: 0.08 }
   );
   cards.forEach((card) => observer.observe(card));
 }
@@ -172,7 +172,7 @@ export default function decorate(block) {
   const { title, viewAllHref, collections } = parseBlock(block);
   block.innerHTML = '';
 
-  // Section header
+  /* ─ Section header ─ */
   const header = document.createElement('div');
   header.className = 'bridal-collections__header';
 
@@ -188,7 +188,7 @@ export default function decorate(block) {
   header.append(h2, viewAll);
   block.appendChild(header);
 
-  // Grid
+  /* ─ Grid ─ */
   const grid = document.createElement('div');
   grid.className = 'bridal-collections__grid';
 
@@ -196,6 +196,5 @@ export default function decorate(block) {
   cards.forEach((card) => grid.appendChild(card));
   block.appendChild(grid);
 
-  // Stagger reveal on scroll
   observeCards(cards);
 }

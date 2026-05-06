@@ -1,9 +1,9 @@
 /*
  * Editorial Text Block — Jared EDS
- * Centered editorial copy section on lavender background.
+ * Centered editorial copy section. Scroll-reveal via IntersectionObserver.
  *
  * Block table structure:
- *   Row 0: [eyebrow label]
+ *   Row 0: [eyebrow label]    — short text < 60 chars
  *   Row 1: [headline]
  *   Row 2: [body text]
  *   Row 3: [CTA link]
@@ -11,9 +11,9 @@
 
 const DEFAULTS = {
   eyebrow: 'The Jared Promise',
-  title: 'Crafted for Your Most Precious Moments',
-  body: 'At Jared, every piece tells a story. From the first diamond to the last detail, we create jewelry that honors life\'s most meaningful milestones.',
-  cta: { text: 'Learn About Jared', href: '/about' },
+  title:   'Crafted for Your Most Precious Moments',
+  body:    'At Jared, every piece tells a story. From the first diamond to the last detail, we create jewelry that honors life\'s most meaningful milestones.',
+  cta:     { text: 'Learn About Jared', href: '/about' },
 };
 
 /**
@@ -23,9 +23,9 @@ export default function decorate(block) {
   const rows = [...block.querySelectorAll(':scope > div')];
   const data = {
     eyebrow: '',
-    title: '',
-    body: '',
-    cta: null,
+    title:   '',
+    body:    '',
+    cta:     null,
   };
 
   rows.forEach((row) => {
@@ -33,6 +33,7 @@ export default function decorate(block) {
     const link = cell.querySelector('a');
     const text = cell.textContent.trim();
 
+    // CTA row
     if (link && !data.cta) {
       data.cta = { text: link.textContent.trim(), href: link.href };
       return;
@@ -49,11 +50,11 @@ export default function decorate(block) {
     }
   });
 
-  // Apply fallbacks
+  // Fallbacks
   if (!data.eyebrow) data.eyebrow = DEFAULTS.eyebrow;
-  if (!data.title) data.title = DEFAULTS.title;
-  if (!data.body) data.body = DEFAULTS.body;
-  if (!data.cta) data.cta = DEFAULTS.cta;
+  if (!data.title)   data.title   = DEFAULTS.title;
+  if (!data.body)    data.body    = DEFAULTS.body;
+  if (!data.cta)     data.cta     = DEFAULTS.cta;
 
   block.innerHTML = '';
 
@@ -102,7 +103,7 @@ export default function decorate(block) {
         }
       });
     },
-    { threshold: 0.2 }
+    { threshold: 0.18 }
   );
   observer.observe(block);
 }

@@ -1,11 +1,12 @@
 /*
  * Hero Block — Jared EDS
- * Full-bleed editorial hero with lower-left overlay text.
+ * Full-bleed editorial hero. Image fills viewport. Text bottom-left overlay.
+ * Staggered CSS animations handle entrance — JS only assembles DOM.
  */
 
 /**
- * Extracts text from a cell, preserving inner HTML for rich content.
- * @param {HTMLElement} cell
+ * Returns the innerHTML of a cell, trimmed.
+ * @param {Element|null} cell
  * @returns {string}
  */
 function cellHTML(cell) {
@@ -13,8 +14,8 @@ function cellHTML(cell) {
 }
 
 /**
- * Extracts text content from a cell.
- * @param {HTMLElement} cell
+ * Returns text content of a cell, trimmed.
+ * @param {Element|null} cell
  * @returns {string}
  */
 function cellText(cell) {
@@ -22,7 +23,7 @@ function cellText(cell) {
 }
 
 /**
- * Builds the hero gradient overlay element.
+ * Builds the gradient overlay element.
  * @returns {HTMLElement}
  */
 function buildGradient() {
@@ -33,76 +34,75 @@ function buildGradient() {
 }
 
 /**
- * Parses the block's table structure into hero content.
- * Expected rows:
- *   Row 0: [image]
- *   Row 1: [eyebrow]
- *   Row 2: [headline]
- *   Row 3: [subtitle]
- *   Row 4: [cta1 | cta2]
+ * Parses block table rows into hero data object.
+ *
+ * Expected row order (flexible — detects by content type):
+ *   [image row]   — contains <picture> or <img>
+ *   [eyebrow]     — short text < 80 chars
+ *   [headline]    — longer display text / h1
+ *   [subtitle]    — descriptive paragraph
+ *   [cta row]     — contains <a> elements
  *
  * @param {HTMLElement} block
- * @returns {Object}
+ * @returns {{ image: Element|null, eyebrow: string, headline: string, subtitle: string, cta1: Object|null, cta2: Object|null }}
  */
 function parseBlock(block) {
   const rows = [...block.querySelectorAll(':scope > div')];
   const data = {
-    image: null,
-    eyebrow: '',
+    image:    null,
+    eyebrow:  '',
     headline: '',
     subtitle: '',
-    cta1: null,
-    cta2: null,
+    cta1:     null,
+    cta2:     null,
   };
 
-  rows.forEach((row, i) => {
+  rows.forEach((row) => {
     const cells = [...row.querySelectorAll(':scope > div')];
     const first = cells[0];
-    const second = cells[1];
 
-    // Detect image row
-    if (first?.querySelector('img, picture')) {
-      data.image = first.querySelector('picture') || first.querySelector('img');
+    // Image row
+    const pic = row.querySelector('picture');
+    const img = !pic && row.querySelector('img');
+    if (pic || img) {
+      data.image = pic || img;
+      const imgEl = pic ? pic.querySelector('img') : img;
+      if (imgEl) {
+        imgEl.setAttribute('loading', 'eager');
+        imgEl.setAttribute('fetchpriority', 'high');
+        if (!imgEl.alt) imgEl.alt = 'Jared editorial hero jewelry';
+      }
       return;
     }
 
-    switch (i) {
-      case 0:
-      case 1: {
-        const text = cellText(first);
-        if (!data.eyebrow && text && text.length < 80) {
-          data.eyebrow = text;
-        }
-        break;
-      }
-      case 2: {
-        data.headline = cellHTML(first) || data.headline;
-        break;
-      }
-      case 3: {
-        data.subtitle = cellHTML(first) || data.subtitle;
-        break;
-      }
-      default: {
-        // Look for CTA links
-        const links = row.querySelectorAll('a');
-        if (links.length >= 1 && !data.cta1) {
-          data.cta1 = { text: links[0].textContent.trim(), href: links[0].href };
-        }
-        if (links.length >= 2 && !data.cta2) {
-          data.cta2 = { text: links[1].textContent.trim(), href: links[1].href };
-        }
-      }
+    // CTA row — contains links
+    const links = row.querySelectorAll('a');
+    if (links.length) {
+      if (!data.cta1) data.cta1 = { text: links[0].textContent.trim(), href: links[0].href };
+      if (links.length >= 2 && !data.cta2) data.cta2 = { text: links[1].textContent.trim(), href: links[1].href };
+      return;
+    }
+
+    // Text rows — assign in order
+    const text = cellText(first);
+    if (!text) return;
+
+    if (!data.eyebrow && text.length < 80) {
+      data.eyebrow = text;
+    } else if (!data.headline) {
+      data.headline = cellHTML(first);
+    } else if (!data.subtitle) {
+      data.subtitle = cellHTML(first);
     }
   });
 
-  // Fallback content
+  // Fallback Figma content
   if (!data.headline) {
-    data.eyebrow = 'Bridal + Engagement';
-    data.headline = 'Modern Rings<br>For Every Yes';
-    data.subtitle = 'Discover our curated collection of engagement and wedding rings, designed for the love that's uniquely yours.';
-    data.cta1 = { text: 'Shop Engagement Rings', href: '/engagement-rings' };
-    data.cta2 = { text: 'Explore Collections', href: '/collections' };
+    data.eyebrow  = 'Holiday Gift Guide';
+    data.headline = 'Unwrap Joy<br><em>This Season</em>';
+    data.subtitle = 'Discover our curated collection of engagement rings, fine jewelry, and gifts — designed for the love that\'s uniquely yours.';
+    data.cta1     = { text: 'Shop the Gift Guide', href: '/gifts' };
+    data.cta2     = { text: 'Explore Collections', href: '/collections' };
   }
 
   return data;
@@ -115,26 +115,20 @@ export default function decorate(block) {
   const data = parseBlock(block);
   block.innerHTML = '';
 
-  // Media layer
+  /* ─ Media ─ */
   if (data.image) {
     const mediaDiv = document.createElement('div');
     mediaDiv.className = 'hero__media';
-    const img = data.image.tagName === 'IMG' ? data.image : data.image.querySelector('img');
-    if (img) {
-      img.setAttribute('loading', 'eager'); // LCP image — load immediately
-      img.setAttribute('fetchpriority', 'high');
-      img.alt = img.alt || 'Jared engagement jewelry editorial';
-    }
     mediaDiv.appendChild(data.image);
     block.appendChild(mediaDiv);
   } else {
     block.classList.add('no-image');
   }
 
-  // Gradient
+  /* ─ Gradient ─ */
   block.appendChild(buildGradient());
 
-  // Content overlay
+  /* ─ Content overlay ─ */
   const content = document.createElement('div');
   content.className = 'hero__content';
 
@@ -182,7 +176,7 @@ export default function decorate(block) {
 
   block.appendChild(content);
 
-  // Scroll indicator
+  /* ─ Scroll indicator ─ */
   const scroll = document.createElement('div');
   scroll.className = 'hero__scroll';
   scroll.setAttribute('aria-hidden', 'true');

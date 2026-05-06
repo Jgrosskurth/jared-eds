@@ -1,6 +1,8 @@
 /*
  * Split Banner Block — Jared EDS
- * 50/50 editorial layout. Variants: image-left (default), image-right.
+ * 50/50 editorial layout. Image fills one side, warm bg content other side.
+ * Add "image-right" class to the block in the doc to flip layout.
+ * Content column slides in from edge on scroll reveal.
  *
  * Block table structure:
  *   Row 0: [image]
@@ -8,15 +10,13 @@
  *   Row 2: [headline]
  *   Row 3: [body text]
  *   Row 4: [CTA link]
- *
- * Add "image-right" class to the block in the doc to flip layout.
  */
 
 const DEFAULTS = {
   eyebrow: 'Create with Jared',
-  title: 'Design the Ring You\'ve Always Imagined',
-  body: 'Work one-on-one with our expert jewelers to bring your vision to life. From custom settings to perfectly matched diamond pairings, your dream ring starts here.',
-  cta: { text: 'Start Designing', href: '/create-with-jared' },
+  title:   'Design the Ring You\'ve Always Imagined',
+  body:    'Work one-on-one with our expert jewelers to bring your vision to life. From custom settings to perfectly matched diamond pairings, your dream ring starts here.',
+  cta:     { text: 'Start Designing', href: '/create-with-jared' },
 };
 
 /**
@@ -25,30 +25,31 @@ const DEFAULTS = {
 export default function decorate(block) {
   const rows = [...block.querySelectorAll(':scope > div')];
   const data = {
-    image: null,
+    image:   null,
     eyebrow: '',
-    title: '',
-    body: '',
-    cta: null,
+    title:   '',
+    body:    '',
+    cta:     null,
   };
 
   rows.forEach((row) => {
     const cells = [...row.querySelectorAll(':scope > div')];
     const cell = cells[0] || row;
 
-    // Image detection
+    // Image row
     const pic = row.querySelector('picture');
     const img = !pic && row.querySelector('img');
     if (pic || img) {
       data.image = pic || img;
       const imgEl = pic ? pic.querySelector('img') : img;
       if (imgEl) {
-        imgEl.setAttribute('loading', 'lazy');
-        imgEl.alt = imgEl.alt || 'Jared jewelry editorial';
+        if (!imgEl.getAttribute('loading')) imgEl.setAttribute('loading', 'lazy');
+        if (!imgEl.alt) imgEl.alt = 'Jared jewelry editorial';
       }
       return;
     }
 
+    // CTA row
     const link = cell.querySelector('a');
     const text = cell.textContent.trim();
 
@@ -68,27 +69,26 @@ export default function decorate(block) {
     }
   });
 
-  // Apply defaults
+  // Fallbacks
   if (!data.eyebrow) data.eyebrow = DEFAULTS.eyebrow;
-  if (!data.title) data.title = DEFAULTS.title;
-  if (!data.body) data.body = DEFAULTS.body;
-  if (!data.cta) data.cta = DEFAULTS.cta;
+  if (!data.title)   data.title   = DEFAULTS.title;
+  if (!data.body)    data.body    = DEFAULTS.body;
+  if (!data.cta)     data.cta     = DEFAULTS.cta;
 
-  // Preserve variant class (image-right)
-  const variant = block.classList.contains('image-right') ? 'image-right' : '';
+  // Preserve image-right variant
+  const isImageRight = block.classList.contains('image-right');
   block.innerHTML = '';
-  if (variant) block.classList.add(variant);
+  if (isImageRight) block.classList.add('image-right');
 
-  // Image column
+  /* ─ Image column ─ */
   const imageCol = document.createElement('div');
   imageCol.className = 'split-banner__image';
+
   if (data.image) {
     imageCol.appendChild(data.image);
-  } else {
-    imageCol.style.background = 'linear-gradient(135deg, var(--color-bg) 0%, var(--color-border) 100%)';
   }
 
-  // Content column
+  /* ─ Content column ─ */
   const contentCol = document.createElement('div');
   contentCol.className = 'split-banner__content';
 
@@ -132,7 +132,7 @@ export default function decorate(block) {
 
   block.append(imageCol, contentCol);
 
-  // Scroll reveal
+  /* ─ Scroll reveal ─ */
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
@@ -142,7 +142,7 @@ export default function decorate(block) {
         }
       });
     },
-    { threshold: 0.15 }
+    { threshold: 0.12 }
   );
   observer.observe(block);
 }

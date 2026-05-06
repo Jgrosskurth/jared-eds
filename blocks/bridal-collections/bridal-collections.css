@@ -1,168 +1,83 @@
 /* =============================================================================
    Bridal Collections Block — Jared EDS
-   4-up curated collection grid
+   4-up collection card grid. Hover: gold border + image scale + overlay CTA.
+   Cards stagger in at 80ms intervals via IntersectionObserver.
    ============================================================================= */
 
 .bridal-collections-wrapper {
   background: var(--color-white);
+  padding: 0;
 }
 
 .bridal-collections {
-  padding: var(--spacing-xl) var(--spacing-lg);
-  max-width: var(--content-max-width);
+  padding: var(--space-xl) var(--space-lg);
+  max-width: var(--content-width);
   margin: 0 auto;
 }
 
-/* Section header */
+/* ─── Section header ─────────────────────────────────────────────────────────── */
 .bridal-collections__header {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  margin-bottom: var(--spacing-xl);
-  gap: var(--spacing-md);
+  margin-bottom: var(--space-xl);
+  gap: var(--space-md);
 }
 
 .bridal-collections__title {
   font-family: var(--font-display);
-  font-size: clamp(24px, 3vw, 38px);
-  font-weight: 700;
+  font-size: clamp(26px, 3vw, 40px);
+  font-weight: 400;
   color: var(--color-primary);
   line-height: 1.1;
   margin: 0;
+  letter-spacing: 0.01em;
 }
 
 .bridal-collections__view-all {
   font-family: var(--font-body);
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-xs);
   font-weight: 600;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--color-primary);
   text-decoration: none;
   border-bottom: 1px solid var(--color-primary);
   white-space: nowrap;
+  padding-bottom: 1px;
   transition: color var(--transition-fast), border-color var(--transition-fast);
 }
 
 .bridal-collections__view-all:hover {
   color: var(--color-accent);
   border-bottom-color: var(--color-accent);
+  text-decoration: none;
 }
 
-/* Grid */
+/* ─── Grid ───────────────────────────────────────────────────────────────────── */
 .bridal-collections__grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: var(--spacing-md);
+  gap: var(--space-md);
 }
 
-/* Card */
+/* ─── Card ───────────────────────────────────────────────────────────────────── */
 .collection-card {
   position: relative;
-  border-radius: var(--border-radius-sm);
   overflow: hidden;
-  background: var(--color-bg-light);
+  background: var(--color-bg);
   cursor: pointer;
   text-decoration: none;
   display: flex;
   flex-direction: column;
-  transition: transform var(--transition-med), box-shadow var(--transition-med);
-}
-
-.collection-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 16px 48px rgba(45, 27, 78, 0.12);
-}
-
-/* Image zone */
-.collection-card__image-wrap {
-  position: relative;
-  overflow: hidden;
-  aspect-ratio: 3 / 4;
-  background: var(--color-bg);
-}
-
-.collection-card__image-wrap img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  display: block;
-  transition: transform var(--transition-slow);
-}
-
-.collection-card:hover .collection-card__image-wrap img {
-  transform: scale(1.05);
-}
-
-/* Purple hover overlay */
-.collection-card__overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(45, 27, 78, 0.0);
-  transition: background var(--transition-med);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.collection-card:hover .collection-card__overlay {
-  background: rgba(45, 27, 78, 0.25);
-}
-
-.collection-card__overlay-cta {
-  opacity: 0;
-  transform: translateY(8px);
-  font-family: var(--font-body);
-  font-size: var(--font-size-xs);
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--color-white);
-  background: transparent;
-  border: 1px solid var(--color-white);
-  padding: 10px 24px;
-  transition: opacity var(--transition-med), transform var(--transition-med);
-  pointer-events: none;
-}
-
-.collection-card:hover .collection-card__overlay-cta {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Card text */
-.collection-card__body {
-  padding: var(--spacing-md) var(--spacing-md) var(--spacing-lg);
-  flex: 1;
-  background: var(--color-white);
-  border-top: 1px solid var(--color-border);
-}
-
-.collection-card__name {
-  font-family: var(--font-display);
-  font-size: var(--font-size-md);
-  font-weight: 700;
-  color: var(--color-primary);
-  margin-bottom: var(--spacing-xs);
-  line-height: 1.2;
-}
-
-.collection-card__desc {
-  font-family: var(--font-body);
-  font-size: var(--font-size-sm);
-  color: var(--color-mid);
-  line-height: 1.5;
-  margin: 0;
-}
-
-/* Staggered reveal */
-.collection-card {
+  border: 1px solid transparent;
+  /* Stagger reveal start state */
   opacity: 0;
   transform: translateY(20px);
   transition:
-    opacity 0.5s ease,
-    transform 0.5s ease,
+    opacity    0.50s ease,
+    transform  0.50s ease,
+    border-color var(--transition-med),
     box-shadow var(--transition-med);
 }
 
@@ -171,47 +86,161 @@
   transform: translateY(0);
 }
 
+/* Gold border on hover — Jared signature */
+.collection-card:hover {
+  border-color: var(--color-accent-light);
+  box-shadow: 0 12px 40px rgba(27, 58, 75, 0.10);
+  text-decoration: none;
+}
+
+/* Hover overrides the reveal state without conflict */
 .collection-card.visible:hover {
   transform: translateY(-4px);
 }
 
-/* Stagger delays */
-.collection-card:nth-child(1) { transition-delay: 0ms; }
-.collection-card:nth-child(2) { transition-delay: 80ms; }
-.collection-card:nth-child(3) { transition-delay: 160ms; }
-.collection-card:nth-child(4) { transition-delay: 240ms; }
+/* Stagger delays — 80ms intervals */
+.collection-card:nth-child(1) { transition-delay: 0ms,   0ms,   0ms, 0ms; }
+.collection-card:nth-child(2) { transition-delay: 80ms,  80ms,  0ms, 0ms; }
+.collection-card:nth-child(3) { transition-delay: 160ms, 160ms, 0ms, 0ms; }
+.collection-card:nth-child(4) { transition-delay: 240ms, 240ms, 0ms, 0ms; }
+/* Subsequent cards — used when more than 4 */
+.collection-card:nth-child(5) { transition-delay: 80ms,  80ms,  0ms, 0ms; }
+.collection-card:nth-child(6) { transition-delay: 160ms, 160ms, 0ms, 0ms; }
+.collection-card:nth-child(7) { transition-delay: 240ms, 240ms, 0ms, 0ms; }
+.collection-card:nth-child(8) { transition-delay: 320ms, 320ms, 0ms, 0ms; }
 
-/* Tablet */
+/* ─── Image wrap ─────────────────────────────────────────────────────────────── */
+.collection-card__image-wrap {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 3 / 4;
+  background: var(--color-bg-section);
+  flex-shrink: 0;
+}
+
+.collection-card__image-wrap picture,
+.collection-card__image-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  transition: transform 0.6s ease;
+}
+
+.collection-card:hover .collection-card__image-wrap picture,
+.collection-card:hover .collection-card__image-wrap img {
+  transform: scale(1.05);
+}
+
+/* ─── Hover overlay ──────────────────────────────────────────────────────────── */
+.collection-card__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(27, 58, 75, 0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition-med);
+}
+
+.collection-card:hover .collection-card__overlay {
+  background: rgba(27, 58, 75, 0.22);
+}
+
+.collection-card__overlay-cta {
+  font-family: var(--font-body);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-white);
+  border: 1px solid var(--color-white);
+  padding: 11px 26px;
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+  transition:
+    opacity   var(--transition-med),
+    transform var(--transition-med);
+}
+
+.collection-card:hover .collection-card__overlay-cta {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ─── Card body ──────────────────────────────────────────────────────────────── */
+.collection-card__body {
+  padding: var(--space-md) var(--space-md) var(--space-lg);
+  flex: 1;
+  background: var(--color-white);
+  border-top: 1px solid var(--color-border);
+}
+
+.collection-card__name {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-primary);
+  margin: 0 0 var(--space-xs);
+  line-height: 1.25;
+}
+
+.collection-card__desc {
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
+  color: var(--color-mid);
+  line-height: 1.55;
+  margin: 0;
+}
+
+/* ─── Tablet — 2-up ──────────────────────────────────────────────────────────── */
 @media (max-width: 1024px) {
   .bridal-collections__grid {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .collection-card:nth-child(3) { transition-delay: 0ms; }
-  .collection-card:nth-child(4) { transition-delay: 80ms; }
+  /* Reset stagger for wrapped rows */
+  .collection-card:nth-child(3) { transition-delay: 0ms,   0ms,   0ms, 0ms; }
+  .collection-card:nth-child(4) { transition-delay: 80ms,  80ms,  0ms, 0ms; }
 }
 
-/* Mobile */
+/* ─── Mobile ─────────────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
   .bridal-collections {
-    padding: var(--spacing-lg) var(--spacing-md);
+    padding: var(--space-lg) var(--space-md);
   }
 
   .bridal-collections__header {
     flex-direction: column;
-    gap: var(--spacing-sm);
+    align-items: flex-start;
+    gap: var(--space-sm);
   }
 
   .bridal-collections__grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: var(--spacing-sm);
+    gap: var(--space-sm);
   }
 
   .collection-card__image-wrap {
-    aspect-ratio: 1 / 1;
+    aspect-ratio: 1;
   }
 
   .collection-card__overlay-cta {
     display: none;
+  }
+}
+
+/* ─── Reduced motion ─────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .collection-card {
+    opacity: 1;
+    transform: none;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  }
+
+  .collection-card.visible:hover {
+    transform: none;
   }
 }

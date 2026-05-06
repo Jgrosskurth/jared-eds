@@ -1,36 +1,88 @@
-/* stylelint-disable max-line-length */
+/*
+ * Jared EDS — Fonts
+ * Loads Cormorant Garamond (display) from Google Fonts via @font-face preload-friendly pattern.
+ * The <link rel="preconnect"> tags should be added to the HTML <head> by the EDS framework.
+ */
+
+/* ============================================================================
+   CORMORANT GARAMOND — Display / Editorial
+   Weights: 300 (Light), 400 (Regular), 600 (SemiBold), 700 (Bold)
+   ============================================================================ */
+
 @font-face {
-  font-family: roboto-condensed;
+  font-family: "Cormorant Garamond";
   font-style: normal;
-  font-weight: 700;
+  font-weight: 300;
   font-display: swap;
-  src: url('../fonts/roboto-condensed-bold.woff2') format('woff2');
+  src:
+    url("https://fonts.gstatic.com/s/cormorantgaramond/v16/co3YmX5slCNuHLi8bLeY9MK7whWMhyjYqXtK.woff2") format("woff2"),
+    local("Cormorant Garamond Light"),
+    local("Georgia");
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 @font-face {
-  font-family: roboto;
-  font-style: normal;
-  font-weight: 700;
+  font-family: "Cormorant Garamond";
+  font-style: italic;
+  font-weight: 300;
   font-display: swap;
-  src: url('../fonts/roboto-bold.woff2') format('woff2');
+  src:
+    url("https://fonts.gstatic.com/s/cormorantgaramond/v16/co3WmX5slCNuHLi8bLeY9MK7whWMhyjornFLsS6V7w.woff2") format("woff2"),
+    local("Cormorant Garamond Light Italic"),
+    local("Georgia Italic");
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 @font-face {
-  font-family: roboto;
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url('../fonts/roboto-medium.woff2') format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-
-@font-face {
-  font-family: roboto;
+  font-family: "Cormorant Garamond";
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('../fonts/roboto-regular.woff2') format('woff2');
+  src:
+    url("https://fonts.gstatic.com/s/cormorantgaramond/v16/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYrEtA9Q.woff2") format("woff2"),
+    local("Cormorant Garamond"),
+    local("Georgia");
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
+
+@font-face {
+  font-family: "Cormorant Garamond";
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src:
+    url("https://fonts.gstatic.com/s/cormorantgaramond/v16/co3ZmX5slCNuHLi8bLeY9MK7whWMhyjormt_5rW4CA.woff2") format("woff2"),
+    local("Cormorant Garamond Italic"),
+    local("Georgia Italic");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Cormorant Garamond";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src:
+    url("https://fonts.gstatic.com/s/cormorantgaramond/v16/co3YmX5slCNuHLi8bLeY9MK7whWMhyjYqXtK.woff2") format("woff2"),
+    local("Cormorant Garamond SemiBold"),
+    local("Georgia Bold");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Cormorant Garamond";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src:
+    url("https://fonts.gstatic.com/s/cormorantgaramond/v16/co3YmX5slCNuHLi8bLeY9MK7whWMhyjYqXtK.woff2") format("woff2"),
+    local("Cormorant Garamond Bold"),
+    local("Georgia Bold");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/*
+ * NOTE: Helvetica Neue is a system font on macOS/iOS. No @font-face needed.
+ * On Windows/Android, Arial is the declared fallback in --font-body.
+ * No web font load required for body text.
+ */

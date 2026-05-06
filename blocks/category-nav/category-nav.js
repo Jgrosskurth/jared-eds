@@ -1,19 +1,20 @@
 /*
  * Category Nav Block — Jared EDS
- * Shop by category — circular image tiles, 6-up on desktop.
+ * Shop by category — circular image tiles, label below.
+ * 6-up desktop. Stagger reveal via IntersectionObserver.
  *
  * Block table structure:
  *   Row 0: [section title]
- *   Row N: [image | label | link href]
+ *   Row N: [image | label | (link href)]
  */
 
 const DEFAULT_CATEGORIES = [
-  { label: 'Engagement Rings', href: '/engagement-rings', image: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=300&q=80' },
-  { label: 'Wedding Bands', href: '/wedding-bands', image: 'https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=300&q=80' },
-  { label: 'Necklaces', href: '/necklaces', image: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=300&q=80' },
-  { label: 'Earrings', href: '/earrings', image: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=300&q=80' },
-  { label: 'Bracelets', href: '/bracelets', image: 'https://images.unsplash.com/photo-1602173574767-37ac01994b2a?w=300&q=80' },
-  { label: 'Diamonds', href: '/diamonds', image: 'https://images.unsplash.com/photo-1589128777073-263566ae5e4d?w=300&q=80' },
+  { label: 'Engagement Rings',  href: '/engagement-rings' },
+  { label: 'Wedding Bands',     href: '/wedding-bands' },
+  { label: 'Necklaces',         href: '/necklaces' },
+  { label: 'Earrings',          href: '/earrings' },
+  { label: 'Bracelets',         href: '/bracelets' },
+  { label: 'Diamonds',          href: '/diamonds' },
 ];
 
 /**
@@ -33,8 +34,8 @@ function createTile(cat) {
   if (cat.imagePicture) {
     const img = cat.imagePicture.querySelector('img');
     if (img) {
-      img.loading = 'lazy';
-      img.alt = cat.label;
+      if (!img.getAttribute('loading')) img.setAttribute('loading', 'lazy');
+      if (!img.alt) img.alt = cat.label;
     }
     imageWrap.appendChild(cat.imagePicture);
   } else if (cat.image) {
@@ -60,24 +61,26 @@ function createTile(cat) {
  */
 export default function decorate(block) {
   const rows = [...block.querySelectorAll(':scope > div')];
-  let title = 'Shop by Style';
+  let title = 'Shop by Category';
   const categories = [];
 
   rows.forEach((row, idx) => {
-    if (idx === 0 && !row.querySelector('img') && !row.querySelector('picture')) {
+    // Header row — no image
+    if (idx === 0 && !row.querySelector('img, picture')) {
       title = row.textContent.trim() || title;
       return;
     }
 
-    const imagePicture = row.querySelector('picture');
+    const imagePicture = row.querySelector('picture') || null;
     const cells = [...row.querySelectorAll(':scope > div')];
-    const textCells = cells.filter((c) => !c.querySelector('img') && !c.querySelector('picture'));
+    const textCells = cells.filter((c) => !c.querySelector('img, picture'));
     const link = row.querySelector('a');
 
     categories.push({
       imagePicture: imagePicture || null,
-      label: textCells[0]?.textContent.trim() || link?.textContent.trim() || `Category ${idx}`,
-      href: link?.href || '#',
+      image:        null,
+      label:        textCells[0]?.textContent.trim() || link?.textContent.trim() || `Category ${idx}`,
+      href:         link?.href || '#',
     });
   });
 
@@ -85,7 +88,7 @@ export default function decorate(block) {
 
   block.innerHTML = '';
 
-  // Header
+  /* ─ Header ─ */
   const header = document.createElement('div');
   header.className = 'category-nav__header';
 
@@ -96,7 +99,7 @@ export default function decorate(block) {
   header.appendChild(h2);
   block.appendChild(header);
 
-  // Grid
+  /* ─ Grid ─ */
   const grid = document.createElement('div');
   grid.className = 'category-nav__grid';
   grid.setAttribute('role', 'list');
@@ -109,17 +112,19 @@ export default function decorate(block) {
 
   block.appendChild(grid);
 
-  // Stagger reveal
+  /* ─ Stagger reveal ─ */
+  // Observe each tile individually so CSS nth-child delay works correctly
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          tiles.forEach((tile) => tile.classList.add('visible'));
+          entry.target.classList.add('visible');
           observer.unobserve(entry.target);
         }
       });
     },
-    { threshold: 0.1 }
+    { threshold: 0.08 }
   );
-  observer.observe(grid);
+
+  tiles.forEach((tile) => observer.observe(tile));
 }

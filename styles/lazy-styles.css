@@ -1,1 +1,157 @@
-/* add global styles that can be loaded post LCP here */
+/*
+ * Jared EDS — Lazy Styles
+ * Non-critical CSS loaded after LCP. Includes: print styles, print media,
+ * low-priority animations, utility classes, scrollbar customization.
+ */
+
+/* ============================================================================
+   CUSTOM SCROLLBAR (WebKit)
+   ============================================================================ */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-section);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-mid);
+}
+
+/* ============================================================================
+   SELECTION
+   ============================================================================ */
+::selection {
+  background-color: rgba(27, 58, 75, 0.15);
+  color: var(--color-primary);
+}
+
+/* ============================================================================
+   SMOOTH SCROLL
+   ============================================================================ */
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================================================
+   UTILITY CLASSES
+   ============================================================================ */
+.u-visually-hidden,
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.u-text-center { text-align: center; }
+.u-text-left   { text-align: left; }
+.u-text-right  { text-align: right; }
+
+.u-mt-0  { margin-top: 0; }
+.u-mb-0  { margin-bottom: 0; }
+.u-mt-sm { margin-top: var(--space-sm); }
+.u-mb-sm { margin-bottom: var(--space-sm); }
+.u-mt-md { margin-top: var(--space-md); }
+.u-mb-md { margin-bottom: var(--space-md); }
+.u-mt-lg { margin-top: var(--space-lg); }
+.u-mb-lg { margin-bottom: var(--space-lg); }
+
+.u-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ============================================================================
+   ENHANCED FOCUS STATES (beyond critical styles)
+   ============================================================================ */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* ============================================================================
+   SECTION DIVIDERS
+   ============================================================================ */
+.section-divider {
+  width: 60px;
+  height: 1px;
+  background: var(--color-accent);
+  margin: var(--space-lg) auto;
+  opacity: 0.6;
+}
+
+/* ============================================================================
+   PRINT STYLES
+   ============================================================================ */
+@media print {
+  *,
+  *::before,
+  *::after {
+    background: transparent !important;
+    color: #000 !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  a,
+  a:visited {
+    text-decoration: underline;
+  }
+
+  a[href]::after {
+    content: " (" attr(href) ")";
+    font-size: 80%;
+  }
+
+  img {
+    max-width: 100% !important;
+    page-break-inside: avoid;
+  }
+
+  h2,
+  h3 {
+    page-break-after: avoid;
+  }
+
+  .announcement-bar-wrapper,
+  .header-wrapper,
+  .footer-wrapper,
+  .header__hamburger,
+  .product-carousel__arrows {
+    display: none !important;
+  }
+}

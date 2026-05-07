@@ -56,7 +56,7 @@ function createCard(collection) {
     const img = document.createElement('img');
     img.src = collection.image;
     img.alt = collection.name;
-    img.loading = 'lazy';
+    img.loading = 'eager';
     img.width = 600;
     img.height = 800;
     imageWrap.appendChild(img);
@@ -123,7 +123,7 @@ function parseBlock(block) {
     if (imagePicture) {
       const img = imagePicture.querySelector('img');
       if (img) {
-        if (!img.getAttribute('loading')) img.setAttribute('loading', 'lazy');
+        if (!img.getAttribute('loading')) img.setAttribute('loading', 'eager');
         if (!img.alt) img.alt = textCells[0]?.textContent.trim() || 'Jared collection';
       }
     }

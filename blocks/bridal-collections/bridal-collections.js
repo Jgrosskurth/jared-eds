@@ -13,25 +13,25 @@ const DEFAULT_COLLECTIONS = [
     name: 'Solitaire Rings',
     desc: 'Classic brilliance. A single diamond, perfectly set.',
     href: '/collections/solitaire',
-    image: null,
+    image: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=600&q=80&auto=format&fit=crop',
   },
   {
     name: 'Halo Collection',
     desc: 'Brilliant center stones encircled by a luminous halo.',
     href: '/collections/halo',
-    image: null,
+    image: 'https://images.unsplash.com/photo-1602751584552-8ba73aad10e1?w=600&q=80&auto=format&fit=crop',
   },
   {
     name: 'Three-Stone Rings',
     desc: 'Past, present, and future — told in three stones.',
     href: '/collections/three-stone',
-    image: null,
+    image: 'https://images.unsplash.com/photo-1599643477877-530eb83abc8e?w=600&q=80&auto=format&fit=crop',
   },
   {
     name: 'Vintage Inspired',
     desc: 'Intricate milgrain details and antique-inspired settings.',
     href: '/collections/vintage',
-    image: null,
+    image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=600&q=80&auto=format&fit=crop',
   },
 ];
 
@@ -160,7 +160,7 @@ function observeCards(cards) {
         }
       });
     },
-    { threshold: 0.08 }
+    { threshold: 0.05, rootMargin: '300px 0px 300px 0px' }
   );
   cards.forEach((card) => observer.observe(card));
 }

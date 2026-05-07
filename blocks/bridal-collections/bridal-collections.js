@@ -137,10 +137,11 @@ function parseBlock(block) {
     });
   });
 
+  const hasImages = collections.some((c) => c.imagePicture || c.image);
   return {
     title,
     viewAllHref,
-    collections: collections.length ? collections : DEFAULT_COLLECTIONS,
+    collections: (collections.length && hasImages) ? collections : DEFAULT_COLLECTIONS,
   };
 }
 
@@ -160,7 +161,7 @@ function observeCards(cards) {
         }
       });
     },
-    { threshold: 0.05, rootMargin: '300px 0px 300px 0px' }
+    { threshold: 0.05, rootMargin: '9999px 0px 9999px 0px' }
   );
   cards.forEach((card) => observer.observe(card));
 }

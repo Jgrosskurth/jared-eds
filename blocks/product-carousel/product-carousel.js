@@ -30,7 +30,7 @@ const DEFAULT_PRODUCTS = [
     name: 'Oval Cut Three-Stone Ring',
     price: '$4,199',
     badge: null,
-    image: 'https://images.unsplash.com/photo-1573408301185-9519f94815ae?w=400&q=80&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?w=400&q=80&auto=format&fit=crop',
   },
   {
     name: 'Princess Cut Solitaire',

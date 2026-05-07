@@ -17,6 +17,7 @@ const DEFAULTS = {
   title:   'Design the Ring You\'ve Always Imagined',
   body:    'Work one-on-one with our expert jewelers to bring your vision to life. From custom settings to perfectly matched diamond pairings, your dream ring starts here.',
   cta:     { text: 'Start Designing', href: '/create-with-jared' },
+  image:   'https://images.unsplash.com/photo-1599707367072-cd6ada2bc375?w=900&q=80&auto=format&fit=crop',
 };
 
 /**
@@ -86,6 +87,14 @@ export default function decorate(block) {
 
   if (data.image) {
     imageCol.appendChild(data.image);
+  } else {
+    const img = document.createElement('img');
+    img.src = DEFAULTS.image;
+    img.alt = 'Jared jewelry editorial';
+    img.loading = 'lazy';
+    img.width = 900;
+    img.height = 900;
+    imageCol.appendChild(img);
   }
 
   /* ─ Content column ─ */
@@ -142,7 +151,7 @@ export default function decorate(block) {
         }
       });
     },
-    { threshold: 0.05, rootMargin: '300px 0px 300px 0px' }
+    { threshold: 0.05, rootMargin: '9999px 0px 9999px 0px' }
   );
   observer.observe(block);
 }

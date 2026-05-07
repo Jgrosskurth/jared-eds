@@ -91,7 +91,7 @@ export default function decorate(block) {
     const img = document.createElement('img');
     img.src = DEFAULTS.image;
     img.alt = 'Jared jewelry editorial';
-    img.loading = 'lazy';
+    img.loading = 'eager';
     img.width = 900;
     img.height = 900;
     imageCol.appendChild(img);

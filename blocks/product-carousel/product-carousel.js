@@ -13,12 +13,44 @@ const ARROW_LEFT  = `<svg viewBox="0 0 24 24" aria-hidden="true"><polyline point
 const ARROW_RIGHT = `<svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>`;
 
 const DEFAULT_PRODUCTS = [
-  { name: 'Round Brilliant Solitaire Ring',  price: '$2,499',                badge: 'new' },
-  { name: 'Cushion Halo Diamond Ring',       price: '$3,299', originalPrice: '$3,999', badge: 'sale' },
-  { name: 'Oval Cut Three-Stone Ring',       price: '$4,199',                badge: null },
-  { name: 'Princess Cut Solitaire',          price: '$1,899',                badge: 'new' },
-  { name: 'Emerald Cut Halo Ring',           price: '$5,499',                badge: null },
-  { name: 'Pear Shape Diamond Ring',         price: '$3,799', originalPrice: '$4,500', badge: 'sale' },
+  {
+    name: 'Round Brilliant Solitaire Ring',
+    price: '$2,499',
+    badge: 'new',
+    image: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400&q=80&auto=format&fit=crop',
+  },
+  {
+    name: 'Cushion Halo Diamond Ring',
+    price: '$3,299',
+    originalPrice: '$3,999',
+    badge: 'sale',
+    image: 'https://images.unsplash.com/photo-1602751584552-8ba73aad10e1?w=400&q=80&auto=format&fit=crop',
+  },
+  {
+    name: 'Oval Cut Three-Stone Ring',
+    price: '$4,199',
+    badge: null,
+    image: 'https://images.unsplash.com/photo-1573408301185-9519f94815ae?w=400&q=80&auto=format&fit=crop',
+  },
+  {
+    name: 'Princess Cut Solitaire',
+    price: '$1,899',
+    badge: 'new',
+    image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&q=80&auto=format&fit=crop',
+  },
+  {
+    name: 'Emerald Cut Halo Ring',
+    price: '$5,499',
+    badge: null,
+    image: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=400&q=80&auto=format&fit=crop',
+  },
+  {
+    name: 'Pear Shape Diamond Ring',
+    price: '$3,799',
+    originalPrice: '$4,500',
+    badge: 'sale',
+    image: 'https://images.unsplash.com/photo-1599643477877-530eb83abc8e?w=400&q=80&auto=format&fit=crop',
+  },
 ];
 
 /**

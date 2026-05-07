@@ -31,7 +31,7 @@ function observeReveal(el) {
         }
       });
     },
-    { threshold: 0.12 }
+    { threshold: 0.05, rootMargin: '300px 0px 300px 0px' }
   );
   observer.observe(el);
 }

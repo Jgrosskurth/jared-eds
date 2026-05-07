@@ -9,12 +9,36 @@
  */
 
 const DEFAULT_CATEGORIES = [
-  { label: 'Engagement Rings',  href: '/engagement-rings' },
-  { label: 'Wedding Bands',     href: '/wedding-bands' },
-  { label: 'Necklaces',         href: '/necklaces' },
-  { label: 'Earrings',          href: '/earrings' },
-  { label: 'Bracelets',         href: '/bracelets' },
-  { label: 'Diamonds',          href: '/diamonds' },
+  {
+    label: 'Engagement Rings',
+    href: '/engagement-rings',
+    image: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400&q=80&auto=format&fit=crop',
+  },
+  {
+    label: 'Wedding Bands',
+    href: '/wedding-bands',
+    image: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=400&q=80&auto=format&fit=crop',
+  },
+  {
+    label: 'Necklaces',
+    href: '/necklaces',
+    image: 'https://images.unsplash.com/photo-1599643477877-530eb83abc8e?w=400&q=80&auto=format&fit=crop',
+  },
+  {
+    label: 'Earrings',
+    href: '/earrings',
+    image: 'https://images.unsplash.com/photo-1573408301185-9519f94815ae?w=400&q=80&auto=format&fit=crop',
+  },
+  {
+    label: 'Bracelets',
+    href: '/bracelets',
+    image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&q=80&auto=format&fit=crop',
+  },
+  {
+    label: 'Diamonds',
+    href: '/diamonds',
+    image: 'https://images.unsplash.com/photo-1602751584552-8ba73aad10e1?w=400&q=80&auto=format&fit=crop',
+  },
 ];
 
 /**
@@ -113,7 +137,6 @@ export default function decorate(block) {
   block.appendChild(grid);
 
   /* ─ Stagger reveal ─ */
-  // Observe each tile individually so CSS nth-child delay works correctly
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
@@ -123,7 +146,7 @@ export default function decorate(block) {
         }
       });
     },
-    { threshold: 0.08 }
+    { threshold: 0.05, rootMargin: '300px 0px 300px 0px' }
   );
 
   tiles.forEach((tile) => observer.observe(tile));

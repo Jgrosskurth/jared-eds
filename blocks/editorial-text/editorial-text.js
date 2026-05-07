@@ -103,7 +103,7 @@ export default function decorate(block) {
         }
       });
     },
-    { threshold: 0.18 }
+    { threshold: 0.05, rootMargin: '300px 0px 300px 0px' }
   );
   observer.observe(block);
 }

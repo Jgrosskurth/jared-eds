@@ -44,7 +44,7 @@ export default function decorate(block) {
       data.image = pic || img;
       const imgEl = pic ? pic.querySelector('img') : img;
       if (imgEl) {
-        if (!imgEl.getAttribute('loading')) imgEl.setAttribute('loading', 'lazy');
+        if (!imgEl.getAttribute('loading')) imgEl.setAttribute('loading', 'eager');
         if (!imgEl.alt) imgEl.alt = 'Jared jewelry editorial';
       }
       return;
